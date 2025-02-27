@@ -1,0 +1,93 @@
+header, nav, main, footer { display: block; } 
+* {box-sizing: border-box; }
+body { background-color: #330000;
+       font-family: Verdana, Arial, sans-serif;
+}
+#wrapper { width: 960px;
+           margin: auto;
+		   background-color: #F4E8BC;
+		   color: #330000;
+		   box-shadow: 5px 5px 5px #000000;
+}
+h1 { background-image: url(images/Evil_Bug.png);
+       background-size: contain;
+     background-repeat: no-repeat;
+     background-color: #F4E8BC;
+	 height: 110px;
+	 font-family: Georgia, "Times New Roman", serif;
+	 font-size: 4.5em;
+     padding-left: 220px;
+	 padding-top: 20px;
+	 text-shadow: 3px 3px 3px #90745D;
+	 margin-bottom: 0;
+}
+nav { padding-top: 10px;
+      float: left;
+      width: 200px; 
+}
+nav ul { list-style-type: none; 
+       padding-left: 0;
+	 }
+nav li { padding-bottom: 5px;
+padding-left: 5px;
+       font-weight: bold;
+}
+nav li:hover { 
+       background: #90745D;
+}
+
+nav a { text-decoration: none; }
+nav a:link { color: #330000; }
+nav a:visited{ color: #90745D; }
+nav a:hover {        color:#FFFFCC;;
+               }
+main { background-color: #FFFFCC;
+          margin-left: 200px;
+          padding: 1px 20px 20px 20px;   
+		  min-height: 300px;
+}
+main img { float: right;
+              padding: 20px;
+}
+
+footer { background-color: #FFFFCC;
+       margin-left: 200px;
+       padding: 20px;
+       text-align: center;
+	   font-size: small;
+	   font-style: italic;
+}
+
+.clear{
+  clear: both;
+}
+
+/*Add your mobile CSS rules below*/
+@media only screen and (max-width: 720px) {
+  body {
+    background-color: lightblue;
+    width: 100%;
+    overflow-x: hidden;
+  }
+  #wrapper{
+  background-color: lightblue;
+  width: 100%;
+  }
+  header{
+  font-size: 8px;
+
+  }
+  img{
+    display:none;
+  }
+nav { padding-top: 10px;
+      float: none;
+      width: 200px; }
+  main { background-color: #FFFFCC;
+          margin-left: 0px;
+          padding: 1px 20px 20px 20px;   
+		  min-height: 300px;}
+  h1{background-image: none;
+  padding-left:0px;
+  }
+}
