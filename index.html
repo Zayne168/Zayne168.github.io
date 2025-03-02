@@ -48,9 +48,31 @@ ul li::before {
 
    }
   a:active {
-  color: red;
-}
-   
+    color: red;
+  }
+  .tooltip {
+    position: relative;
+    display: inline-block;
+    border-bottom: 1px dotted orange;
+  }
+
+  .tooltip .tooltiptext {
+    visibility: hidden;
+    width: 120px;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+
+    /* Position the tooltip-courtesy of W-3 schools */
+    position: absolute;
+    z-index: 1;
+  }
+
+  .tooltip:hover .tooltiptext {
+    visibility: visible;
+  }
 </style>
   </head>
 <body>
@@ -60,7 +82,8 @@ ul li::before {
   <hr>
 <ul>
   <li><a href="Docs/Resume2025.pdf">Resume (PDF)</a></li>
-  <li><a href="https://github.com/Zayne168/Zayne168.github.io">This Repository</a></li>
+  <li><a href="https://github.com/Zayne168/Zayne168.github.io">This Repository</a><div class="tooltip">?
+                                  <span class="tooltiptext">Not much going on here? Check out the repository and see all sorts of random projects not supported by Github Pages!</span></div></li>
   <li><a href="College/sc/spellCheck.html">placeholder</a></li>
   <li><a href="https://play.unity.com/en/games/f74511f8-068a-42cf-a9c7-a97c6262d2fb/flight-forecast">Flight Forecast (Unity)</a></li>
   <li><a href="College/sc/spellCheck.html">Spell Checker (Dynamic Programming)</a></li>
