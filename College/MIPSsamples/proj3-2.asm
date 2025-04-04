@@ -96,7 +96,7 @@ main:
 			mov.s $f12, $f30
 			syscall
 			
-				div.s $f27,	$f6, $f7 		#fact check this shit
+				div.s $f27,	$f6, $f7 		
 				mul.s $f27, $f27, $f30
 				mul.s $f27, $f27, $f29 		# monthly interest
 				sub.s $f26, $f28,$f27
