@@ -6,9 +6,9 @@
     <title>Portfolio</title>
     <link href="style.css" rel="stylesheet" type="text/css" />
 <style>
-HR{
+hr{
   border-style: inset;
-  border-radius: 50px;}
+  border-radius: 50px;
 }
 h1{
   border-style: solid;
@@ -101,7 +101,9 @@ text-align: center;
   background-color: #e0e0e0;
 }
 </style>
-  </head>
+</head>
+
+
 <body>
   <h1><div class="centered">Zayne Bonner</div></h1>
   <h3><div class="centered">zayne5504@hotmail.com</div></h3>
@@ -139,21 +141,8 @@ text-align: center;
       <th>Grade Achieved</th>
     </tr>
   </thead>
-  <tbody>
-    <tr>
-      <td>CS xxx</td>
-      <td>Sample txt1</td>
-      <td>Sample txt2</td>
-      <td>SIUE</td>
-      <td>A</td>
-    </tr>
+  <tbody id="course-body">
 
-    <tr>
-      <td>CS xxy</td>
-      <td></td>
-      <td></td>
-      <td></td>
-    </tr>
 
   </tbody>
 </table>
@@ -161,5 +150,44 @@ text-align: center;
   <ul>
     
   </ul> -->
+
+
+<!-- The below script is a Papaparse - a library that handles quoted commas for course desc in my table-->
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+
+<script>
+	Papa.parse('Docs/courses.csv', {
+		download: true,
+		header: true,
+		complete: function(results) {
+			const tbody = document.getElementById('course-body');
+
+			results.data.forEach(course => {
+				if (!course.course_code) return;
+
+				const tr = document.createElement('tr');
+
+				const fields = [
+					course.course_code,
+					course.course_title,
+					course.description,
+					course.school_taken_at,
+					course.grade
+				];
+
+				fields.forEach(value => {
+					const td = document.createElement('td');
+					td.textContent = value;
+					tr.appendChild(td);
+				});
+
+				tbody.appendChild(tr);
+			});
+		},
+		error: function(err) {
+			console.error('CSV parse error:', err);
+		}
+	});
+</script> 
 </body>
 </html>

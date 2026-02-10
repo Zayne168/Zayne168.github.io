@@ -1,0 +1,7 @@
+course_code,course_title,description,school_taken_at,grade
+CIS-122,Intro/Computer Programming,"Introduction to programming logic and concepts with emphasis on syntax, structure, and real-world applications, including use of an Integrated Development Environment (IDE).",Parkland College,A
+CIS-152,Web Design and Development I,"Fundamental web design skills covering HTML5, CSS3, and common web design frameworks to build responsive websites.",Parkland College,A
+CSC-140,Computer Science I (Java),"Introduction to computer science and programming using the Java language with emphasis on problem solving, algorithm design, and program development.",Parkland College,A
+CSC-155,Systems Development I,"Introduction to developing software systems integrated with databases, file systems, and web technologies.",Parkland College,A
+ENG-101,Composition I,"Essay writing with emphasis on process, purpose, audience awareness, organization, development, and engagement with outside texts.",Parkland College,A
+ENG-102,Composition II,"Advanced writing course with emphasis on research paper writing, developing a focused thesis, and supporting arguments in organized essays.",Parkland College,A
