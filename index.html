@@ -156,12 +156,12 @@ text-align: center;
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 
 <script>
-	Papa.parse('Docs/courses.csv', {
+	Papa.parse('Docs/courses.csv?v=' + new Date().getTime(), {
 		download: true,
 		header: true,
 		complete: function(results) {
 			const tbody = document.getElementById('course-body');
-
+      tbody.innerHTML = '';
 			results.data.forEach(course => {
 				if (!course.course_code) return;
 
