@@ -1,0 +1,172 @@
+import torch
+from torch.utils.data import DataLoader, random_split
+from torch.utils.tensorboard import SummaryWriter
+import torchvision
+import torchvision.datasets as datasets
+import torchvision.transforms as transforms
+import torch.optim as optim
+import torch.nn as nn
+import torch.nn.functional as F
+import matplotlib.pyplot as plt
+import numpy as np
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
+
+from trainer_testerT3 import train,test
+from model import Net
+from dataset import MyDataset
+
+
+#torch.cuda.is_available()
+#torch.cuda.get_device_name(0)
+#torch.cuda.mem_get_info()
+device=torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+print(device)
+
+
+if __name__ == "__main__":
+	CLASSES=2
+	BATCH_SIZE=64
+	EPOCHS=5
+	LEARNING_RATE=0.0001 
+	SEED=800756759
+	NUM_WORKERS=3
+
+	trainLosses, valLosses = [], []
+	trainAccs, valAccs = [], []
+
+	#BRAIN DATASET
+	with open("dataOUT/bpositive.txt") as f:
+		pos = [line.strip() for line in f]
+
+	with open("dataOUT/bnegative.txt") as f:
+		neg = [line.strip() for line in f]
+	sequences = pos + neg
+	labels = [1]*len(pos) + [0]*len(neg)
+
+		#dataset defined
+	entireDataset = MyDataset(sequences, labels)
+
+	trainLen = int(0.7*(len(entireDataset)))
+	valLen = int(0.15*(len(entireDataset)))
+	testLen = int(len(entireDataset) - trainLen - valLen)
+	trainDataset, valDataset, testDataset = random_split(entireDataset, [trainLen, valLen, testLen], generator=torch.Generator().manual_seed(SEED))
+
+	train_loader=torch.utils.data.DataLoader(trainDataset,batch_size=BATCH_SIZE, num_workers = NUM_WORKERS, shuffle=True)
+	val_loader=torch.utils.data.DataLoader(valDataset,batch_size=BATCH_SIZE,shuffle=True)
+	test_loader=torch.utils.data.DataLoader(testDataset,batch_size=BATCH_SIZE,shuffle=True)
+
+	model=Net()
+	model = model.to(device)
+	
+	#load Task4 
+	best_model_path = "best_net.pth"
+	try:
+		model.load_state_dict(torch.load(best_model_path, map_location=device))
+		print(f"Loaded pre-trained weights: {best_model_path}")
+	except FileNotFoundError:
+		print("uh oh.")
+	
+	#Freeze pool/conv
+	for name, param in model.named_parameters():
+		if 'conv' in name or 'pool' in name:
+			param.requires_grad = False
+			print(f"Froze: {name}")
+	
+	#unfreeze FC
+	for name, param in model.named_parameters():
+		if 'fc' in name:
+			param.requires_grad = True
+			print(f"Unfroze: {name}")
+	
+	model.eval()
+	writer = SummaryWriter(log_dir="../runs/Task5")
+	#Comp Graph
+	sample_input = entireDataset[0][0].permute(1, 0).unsqueeze(0).to(device)
+	with torch.no_grad():
+		writer.add_graph(model, sample_input)
+	writer.flush()
+	model.train()
+	
+	#optimizer optimizing FC layers only
+	optimizer = optim.Adam([p for p in model.parameters() if p.requires_grad], lr=LEARNING_RATE)
+	loss_fn = nn.BCELoss()
+	#We use BCE since 2 classes. CE wont work :(
+
+	best_val_acc = 0.0
+	best_model_path_finetune = "best_net_finetuned.pth"
+
+	for epoch in range(1,EPOCHS+1):
+		trainLoss, trainAcc = train(model, device, train_loader, optimizer, epoch)
+		print(f"Epoch {epoch} Validation:")
+		valLoss, valAcc,a,b,c = test(model, device, val_loader)
+
+		if valAcc > best_val_acc:
+			best_val_acc = valAcc
+			torch.save(model.state_dict(), best_model_path_finetune)
+			print(f"Saved best fine-tuned model at epoch {epoch} with validation accuracy {valAcc:.2f}% -> {best_model_path_finetune}")
+
+		trainLosses.append(trainLoss)
+		valLosses.append(valLoss)
+		trainAccs.append(trainAcc)
+		valAccs.append(valAcc)
+
+		writer.add_scalar("Loss/Train", trainLoss, epoch)
+		writer.add_scalar("Loss/Test", valLoss, epoch)
+		writer.add_scalar("Accuracy/Test", valAcc, epoch)
+		writer.add_scalar("Accuracy/Train", trainAcc, epoch)
+
+	print("Testing on new organ dataset:")
+	test_loss, test_acc, fig, precision, recall = test(model, device, test_loader)
+	writer.add_figure('Confusion Matrix', fig)
+	writer.add_scalar('Precision', precision)
+	writer.add_scalar('Recall', recall)
+
+	writer.close()
+
+	#Loss plot
+	# plt.figure()
+	# plt.plot(trainLosses, label="Train Loss")
+	# plt.plot(valLosses, label="Validation Loss")
+	# plt.legend()
+	# plt.title("Loss vs Epoch")
+	# plt.xlabel("Epoch")
+	# plt.ylabel("Loss")
+	# plt.show()
+	# plt.savefig("2loss.png")
+
+	# #Accuracy plot
+	# plt.figure()
+	# plt.plot(trainAccs, label="Train Accuracy")
+	# plt.plot(valAccs, label="Validation Accuracy")
+	# plt.legend()
+	# plt.title("Accuracy vs Epoch")
+	# plt.xlabel("Epoch")
+	# plt.ylabel("Accuracy")
+	# plt.show()
+	# plt.savefig("2accuracy.png")
+
+
+
+
+	# allPreds = []
+	# allLabels = []
+
+	# model.eval()
+	# with torch.no_grad():
+	# 	for x, y in test_loader:
+	# 		x = x.permute(0, 2, 1).to(device)
+	# 		y = y.to(device)
+
+	# 		output = model(x)
+	# 		predictions = (output >= 0.5).float()
+
+	# 		allPreds.extend(predictions.cpu().numpy().flatten())
+	# 		allLabels.extend(y.cpu().numpy().flatten())
+
+	# cm = confusion_matrix(allLabels, allPreds)
+	# disp = ConfusionMatrixDisplay(confusion_matrix=cm)
+	# disp.plot()
+
+	# plt.title("Confusion Matrix")
+	# plt.show()
+	# plt.savefig("2confusionMatrix.png")
