@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>Library</title>
+    <link href="style.css" rel="stylesheet" type="text/css" />
+<style>
+hr{
+  border-style: inset;
+  border-radius: 50px;
+}
+h1{
+  border-style: solid;
+  border-color: black orange orange black;
+  border-radius: 50px;}
+ul{
+  list-style: none;
+}
+
+ul li::before {
+  content: "\2022";
+  color: orange;
+  font-weight: bold;
+  display: inline-block; 
+  width: 1em;
+  margin-left: -1em;
+
+}
+
+  
+   body {background-color: #D3D3D3;
+   font-family: Papyrus;
+   }
+
+  a:link{
+    color: black;
+    text-decoration: none;
+
+
+
+  }
+  a:hover{
+      color: orange;
+      border-style: inset;
+
+
+
+   }
+  a:active {
+    color: red;
+  }
+  .tooltip {
+    position: relative;
+    display: inline-block;
+    border: 1px dotted orange;
+  }
+
+  .tooltip .tooltiptext {
+    visibility: hidden;
+    width: 240px;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+
+    /* Position the tooltip-courtesy of W-3 schools */
+    position: absolute;
+    z-index: 1;
+  }
+
+  .tooltip:hover .tooltiptext {
+    visibility: visible;
+  }
+  .centered{
+text-align: center;
+  }
+.library-table {
+  width: 90%;
+  margin: 20px auto;
+  border-collapse: collapse;
+  background-color: #f5f5f5;
+  font-family: Papyrus;
+}
+
+.library-table th,
+.library-table td {
+  border: 2px solid black;
+  padding: 10px;
+  text-align: left;
+}
+
+.library-table th {
+  background-color: orange;
+  color: black;
+  text-align: center;
+}
+
+.library-table tr:nth-child(even) {
+  background-color: #e0e0e0;
+}
+</style>
+</head>
+<body>
+<h1 class="centered">Books I've Enjoyed!</h1>
+<hr>
+
+
+<table class="library-table">
+  <thead>
+    <tr>
+      <th>Author</th>
+      <th>Title</th>
+      <th>Do I Recommend?</th>
+    </tr>
+  </thead>
+  <tbody id="library-body">
+
+
+  </tbody>
+</table>
+<!--<p>Current Projects:</p>
+  <ul>
+    
+  </ul> -->
+
+
+<!-- PapaParse-->
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+
+<script>
+	Papa.parse('library.csv?v=' + new Date().getTime(), {
+		download: true,
+		header: true,
+		complete: function(results) {
+			const tbody = document.getElementById('library-body');
+      tbody.innerHTML = '';
+			results.data.forEach(book => {
+				if (!book.author) return;
+
+				const tr = document.createElement('tr');
+
+				const fields = [
+					book.author,
+					book.title,
+					book.recommend
+				];
+
+				fields.forEach(value => {
+					const td = document.createElement('td');
+					td.textContent = value;
+					tr.appendChild(td);
+				});
+
+				tbody.appendChild(tr);
+			});
+		},
+		error: function(err) {
+			console.error('CSV parse error:', err);
+		}
+	});
+</script> 
+</body>
+</html>
